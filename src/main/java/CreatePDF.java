@@ -19,7 +19,7 @@ public class CreatePDF {
                 "1589-01",
                 153,
                 "409 Washington Ave",
-                new String[]{"havana", "lying"}
+                new String[] {"repair", "reside"}
         );
         try {
             System.out.println("Creating");
@@ -42,6 +42,7 @@ public class CreatePDF {
 
         String words;
         PDFont font = PDType1Font.COURIER;
+        PDFont boldFont = PDType1Font.COURIER_BOLD;
         short fontSize;
         short margin = 70;
         float pageHeight = page.getMediaBox().getHeight();
@@ -137,12 +138,20 @@ public class CreatePDF {
 
     // Add Building Permit
         words = "Building Permit";
+        short tmp = fontSize;
+        fontSize = 24;
         xoffset = pageWidth/2- getWidth(words, font, fontSize)/2;
         stream.newLineAtOffset(
                 xoffset, pageHeight - margin - fontSize*3
         );
+        stream.setFont(font, fontSize);
         stream.showText(words);
-        stream.newLineAtOffset(-xoffset+ margin, -60);
+        stream.newLineAtOffset(-xoffset+ margin, -50);
+
+        fontSize=15;
+        stream.setFont(font, fontSize);
+        stream.setLeading(fontSize*1.2);
+        float defaultSpacing = 0;
 
         String wordings =
                 "In consideration of the statements and representations made by "+
@@ -160,12 +169,9 @@ public class CreatePDF {
                 "electrical work, plumbing, heating, plastering, etc.\n"+
                 "Given under the hand of the Mayor of said City and its corporate seal and attested "+
                 "by its clerk this"+"ADD DATE HERE";
+        //USE Date class & Calendar clas for importing the date.
 
-        fontSize=15;
-        stream.setFont(font, fontSize);
-        stream.setLeading(fontSize*1.2);
         String[] body = wordings.split("\n");
-        float defaultSpacing = 0;
 
         float width = page.getMediaBox().getWidth() - 2*margin;
         for (String para: body) {

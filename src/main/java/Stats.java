@@ -37,8 +37,21 @@ public class Stats {
         return address;
     }
 
-    String[] getTypes() {
-        return types;
+    String getTypes() {
+        if (types == null || types.length == 0) {
+            return "";
+        } else if (types.length == 1) {
+            return types[0];
+        } else if (types.length == 2) {
+            return types[0]+" and "+types[1];
+        } else {
+            String str = "";
+            for (int i = 0 ; i < types.length-1 ; i++) {
+                str += types[i]+", ";
+            }
+            str += "and "+types[types.length-1];
+            return str;
+        }
     }
 
     String getPrice() { return possMissingField(price); }

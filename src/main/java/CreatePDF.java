@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class CreatePDF {
 
@@ -40,7 +42,7 @@ public class CreatePDF {
 
         PDPageContentStream stream = new PDPageContentStream(doc,page);
 
-        String words;
+        String workingSpace;
         PDFont font = PDType1Font.COURIER;
         PDFont boldFont = PDType1Font.COURIER_BOLD;
         short fontSize;
@@ -71,16 +73,16 @@ public class CreatePDF {
     //Add Signature Titles.
         fontSize = 12;
         stream.setFont(font, fontSize);
-        words = "Mayor";
-        xoffset = pageWidth - margin - getWidth(words,font,fontSize);
+        workingSpace = "Mayor";
+        xoffset = pageWidth - margin - getWidth(workingSpace,font,fontSize);
         yoffset = margin - fontSize;
         stream.newLineAtOffset(xoffset,yoffset);//position for sig
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset,-yoffset);//reset position
-        words="Clerk";
-        xoffset = (float) (pageWidth - pdImage.getWidth()*1.25 -getWidth(words,font,fontSize) - margin);
+        workingSpace="Clerk";
+        xoffset = (float) (pageWidth - pdImage.getWidth()*1.25 -getWidth(workingSpace,font,fontSize) - margin);
         stream.newLineAtOffset(xoffset, yoffset);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset, -yoffset);
 
 
@@ -89,73 +91,73 @@ public class CreatePDF {
         fontSize=20;
         stream.setFont(font, fontSize);
 
-        words = "$"+memo.getPrice();
+        workingSpace = "$"+memo.getPrice();
         xoffset = margin;
         yoffset = pageHeight-margin;
         stream.newLineAtOffset(xoffset, yoffset);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset, 0);
 
-        words = memo.getParcel();
-        xoffset = margin + 216 - getWidth(words,font,fontSize);
+        workingSpace = memo.getParcel();
+        xoffset = margin + 216 - getWidth(workingSpace,font,fontSize);
         stream.newLineAtOffset(xoffset,0);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset,0);
 
 
-        words = memo.getPermitNum();
-        xoffset = pageWidth - margin - getWidth(words, font, fontSize);
+        workingSpace = memo.getPermitNum();
+        xoffset = pageWidth - margin - getWidth(workingSpace, font, fontSize);
         stream.newLineAtOffset(xoffset, 0);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset, -fontSize);    yoffset -= fontSize;
 
-        words = "State of Minnesota";
+        workingSpace = "State of Minnesota";
         xoffset = margin;
         stream.newLineAtOffset(xoffset,0);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset,0);
 
-        words = "City of Villard";
-        xoffset = pageWidth - margin - getWidth(words,font,fontSize);
+        workingSpace = "City of Villard";
+        xoffset = pageWidth - margin - getWidth(workingSpace,font,fontSize);
         stream.newLineAtOffset(xoffset, 0);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset, -fontSize);    yoffset -= fontSize;
 
-        words = "County of Pope";
+        workingSpace = "County of Pope";
         xoffset = margin;
         stream.newLineAtOffset(xoffset,0);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset,0);
 
-        words = "Office of Clerk";
-        xoffset = pageWidth - margin - getWidth(words,font,fontSize);
+        workingSpace = "Office of Clerk";
+        xoffset = pageWidth - margin - getWidth(workingSpace,font,fontSize);
         stream.newLineAtOffset(xoffset, 0);
-        stream.showText(words);
+        stream.showText(workingSpace);
 
 
         stream.newLineAtOffset(-xoffset,-yoffset);
 
 
     // Add Building Permit
-        words = "Building Permit";
-        short tmp = fontSize;
+        workingSpace = "Building Permit";
         fontSize = 24;
-        xoffset = pageWidth/2- getWidth(words, font, fontSize)/2;
+        xoffset = pageWidth/2- getWidth(workingSpace, font, fontSize)/2;
         stream.newLineAtOffset(
                 xoffset, pageHeight - margin - fontSize*3
         );
         stream.setFont(font, fontSize);
-        stream.showText(words);
+        stream.showText(workingSpace);
         stream.newLineAtOffset(-xoffset+ margin, -50);
 
         fontSize=15;
         stream.setFont(font, fontSize);
         stream.setLeading(fontSize*1.2);
-        float defaultSpacing = 0;
+        float defaultSpacing = 0;// ???
+        float width = page.getMediaBox().getWidth() - 2*margin;
+        LinkedList<String> words = new LinkedList<String>();
 
-        String wordings =
+        workingSpace =
                 "In consideration of the statements and representations made by "+
-                memo.getName()+" @ "+memo.getAddress()+" "+
                 "in application therefor duly filed in this office, which application is "+
                 "made a part hereof, permission is hereby granted to said "+memo.getName()+" "+
                 "as owner to "+memo.getTypes()+" a building described as follows: [KIND OF CONSTRUCTION] "+
@@ -168,22 +170,92 @@ public class CreatePDF {
                 "property, such as streets, sidewalks, alleys, etc; and that it does NOT cover "+
                 "electrical work, plumbing, heating, plastering, etc.\n"+
                 "Given under the hand of the Mayor of said City and its corporate seal and attested "+
-                "by its clerk this"+"ADD DATE HERE";
-        //USE Date class & Calendar clas for importing the date.
+                "by its clerk this "+"ADD DATE HERE";
+        String[] body = workingSpace.split("\n");
+        String[] wordings = body[0].split(" ");
 
-        String[] body = wordings.split("\n");
+        words.addAll(Arrays.asList(wordings));
 
-        float width = page.getMediaBox().getWidth() - 2*margin;
+        String line = "";
+        for (int i = 0 ; i < 9 ; i++) {
+            line += words.remove()+" ";
+        }
+        if (getWidth(line+memo.getName(),font,fontSize) < width) {
+//        if (false) {
+            stream.setCharacterSpacing(
+                    (width - getWidth(line+memo.getName(),font,fontSize)) /
+                            (line.length()+memo.getName().length() - 1)
+            );
+            stream.showText(line);
+            stream.setFont(boldFont,fontSize);
+            stream.showText(memo.getName());
+            stream.setFont(font, fontSize);
+            stream.newLine();
+
+            line = "";
+            while (getWidth("@ "+line+words.element()+memo.getAddress(),font,fontSize) < width) {
+                line += words.remove()+" ";
+            }
+            stream.setCharacterSpacing(
+                    (width - getWidth("@ "+line+memo.getAddress(),font,fontSize)) /
+                            ("@ ".length()+line.length()+memo.getAddress().length() - 1)
+            );
+
+            stream.showText("@ ");
+            stream.setFont(boldFont,fontSize);
+            stream.showText(memo.getAddress());
+            stream.setFont(font,fontSize);
+            stream.showText(" "+line);
+        } else {
+            stream.setCharacterSpacing(
+                    (width - getWidth(line,font,fontSize)+getWidth(" ",font,fontSize)) /
+                            (line.length() - 1)
+            );
+            stream.showText(line);
+            stream.newLine();
+
+            line = "";
+            while (getWidth(memo.getName()+words.peek()+" @ "+memo.getAddress()+line,font,fontSize) < width) {
+                line += words.remove()+ " ";
+            }
+            stream.setCharacterSpacing(
+                    (width - getWidth(memo.getName()+" @ "+memo.getAddress()+line,font,fontSize)) /
+                            (memo.getName().length()+" @ ".length()+memo.getAddress().length()+line.length() - 1)
+            );
+            stream.setFont(boldFont, fontSize);
+            stream.showText(memo.getName());
+            stream.setFont(font, fontSize);
+            stream.showText(" @ ");
+            stream.setFont(boldFont, fontSize);
+            stream.showText(memo.getAddress()+" ");
+            stream.setFont(font, fontSize);
+            stream.showText(line);
+        }
+        stream.newLine();
+
+        body[0] = "";
+        for (String x: words) {
+            body[0] += x+" ";
+        }
+//        System.out.println(body[0]);
+
+//        String[] body = wordings.split("\n");
+//
+//
+//
+//
+//
+
         for (String para: body) {
             String[] wordplay = para.split(" ");
-            String line = "";
+            line = "";
             for (String word: wordplay) {
                 String test = line.concat(word);
                 if (getWidth(test,font,fontSize) < width) {
-                    line +=" "+ word;
+                    line +=word+" ";
                 } else {
                     stream.setCharacterSpacing(
-                            (width - getWidth(line,font,fontSize)) / (line.length() - 1)
+                            (width+getWidth(" ",font,fontSize) - getWidth(line,font,fontSize)) / (line.length() - 1)
                     );
                     stream.showText(line);
                     line = word;
@@ -193,7 +265,7 @@ public class CreatePDF {
             }
             stream.showText(line);
             stream.newLine();
-            stream.newLineAtOffset(0,-8);
+//            stream.newLineAtOffset(0,-8);
         }
 
 

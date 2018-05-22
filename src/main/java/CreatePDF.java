@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 public class CreatePDF {
@@ -19,7 +20,7 @@ public class CreatePDF {
         Stats testout = new Stats(
                 "London Tipton",
                 "1589-01",
-                153,
+                "2018-51",
                 "409 Washington Ave",
                 new String[] {"repair", "reside"}
         );
@@ -161,16 +162,16 @@ public class CreatePDF {
                 "in application therefor duly filed in this office, which application is "+
                 "made a part hereof, permission is hereby granted to said "+memo.getName()+" "+
                 "as owner to "+memo.getTypes()+" a building described as follows: [KIND OF CONSTRUCTION] "+
-                "front (or width) in feet "+memo.getWidth()+"; side (or length) in feet "+memo.getLength()+"; height in feet "+memo.getHeight()+";"+
-                "number of stories: "+memo.getStories()+"; "+memo.getArea()+" square feet, upon that tract of land described "+
-                "as follows: "+memo.getParcel()+" which tract is of the size and area specified previously.\n"+
+                "front (or width) in feet "+memo.getWidth()+"; side (or length) in feet "+memo.getLength()+
+                "; height in feet "+memo.getHeight()+"; number of stories: "+memo.getStories()+"; "+
+                memo.getArea()+" square feet, upon that tract of land described previously.\n"+
                 "This permit is granted upon the express conditions that said owner and the "+
                 "contractors, agents, workers, and employees, shall comply in all respects with "+
                 "the ordinances of the City of Villard; that it does not cover the use of public "+
                 "property, such as streets, sidewalks, alleys, etc; and that it does NOT cover "+
                 "electrical work, plumbing, heating, plastering, etc.\n"+
                 "Given under the hand of the Mayor of said City and its corporate seal and attested "+
-                "by its clerk this "+"ADD DATE HERE";
+                "by its clerk this "+getDate();
         String[] body = workingSpace.split("\n");
         String[] wordings = body[0].split(" ");
 
@@ -258,7 +259,7 @@ public class CreatePDF {
                             (width+getWidth(" ",font,fontSize) - getWidth(line,font,fontSize)) / (line.length() - 1)
                     );
                     stream.showText(line);
-                    line = word;
+                    line = word+" ";
                     stream.newLine();
                     stream.setCharacterSpacing(defaultSpacing);
                 }
@@ -288,5 +289,77 @@ public class CreatePDF {
      */
     private static float getWidth(String foo, PDFont font, short fontSize) throws IOException {
         return font.getStringWidth(foo) / 1000 * fontSize;
+    }
+
+    /** returns DD month YYYY format according to specs
+     *
+     * @return date
+     */
+    private static String getDate() {
+        Calendar cal = Calendar.getInstance();
+
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        String rmonth = "";
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String rday = String.valueOf(day);
+
+        switch (day) {
+            case 1:
+            case 21:
+            case 31:
+                rday += "st";
+                break;
+            case 2:
+            case 22:
+                rday += "nd";
+                break;
+            case 3:
+            case 23:
+                rday += "rd";
+                break;
+            default:
+                rday += "th";
+        }
+        switch (month) {
+            case 0:
+                rmonth = "January";
+                break;
+            case 1:
+                rmonth = "February";
+                break;
+            case 2:
+                rmonth = "March";
+                break;
+            case 3:
+                rmonth = "April";
+                break;
+            case 4:
+                rmonth = "May";
+                break;
+            case 5:
+                rmonth = "June";
+                break;
+            case 6:
+                rmonth = "July";
+                break;
+            case 7:
+                rmonth = "August";
+                break;
+            case 8:
+                rmonth = "September";
+                break;
+            case 9:
+                rmonth = "October";
+                break;
+            case 10:
+                rmonth = "November";
+                break;
+            case 11:
+                rmonth = "December";
+                break;
+        }
+
+        return rday+" day of "+rmonth+" Year "+year;
     }
 }

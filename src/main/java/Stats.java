@@ -1,7 +1,7 @@
 public class Stats {
     private String name;
     private String parcel;
-    private int permit;
+    private String permit;
     private String address;
     private Short price;
     private String[] types;
@@ -30,7 +30,7 @@ public class Stats {
     }
 
     String getPermitNum() {
-        return String.valueOf(permit);
+        return permit;
     }
 
     String getAddress() {
@@ -66,7 +66,7 @@ public class Stats {
 
     String getArea() { return possMissingField(area); }
 
-    Stats (String name, String parcel, int permit, String address, String[] types) {
+    Stats (String name, String parcel, String permit, String address, String[] types) {
         this.name = name;
         this.parcel= parcel;
         this.permit = permit;

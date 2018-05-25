@@ -16,7 +16,7 @@ public class CreatePDF {
 //    static PDPageContentStream stazz; <-- using stazz should cut down on repetition.
 
 //    public static void main(String[] args) {
-    public static void main(String name, String parcelNum, String permitNum, String address) {
+    public static void main(Stats info) {
 
 //        Stats testout = new Stats(
 //                "London Tipton",
@@ -25,16 +25,16 @@ public class CreatePDF {
 //                "409 Washington Ave",
 //                new String[] {"repair", "reside"}
 //        );
-        Stats testout = new Stats(
-                name,
-                parcelNum,
-                permitNum,
-                address,
-                null
-        );
+//        Stats testout = new Stats(
+//                name,
+//                parcelNum,
+//                permitNum,
+//                address,
+//                null
+//        );
         try {
             System.out.println("Creating");
-            createpdf(testout);
+            createpdf(info);
             System.out.println("Done.");
         } catch (Exception e) {
             e.printStackTrace();
